@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Line Wrapper</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .column {
+      padding: 20px;
+      background-color: #fff;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .column textarea {
+      width: 100%;
+      height: 100%;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      resize: none;
+    }
+    .column input[type="number"],
+    .column input[type="checkbox"] {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+    .button-column {
+      width: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #fff;
+    }
+    .button-column button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .button-column label {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .button-column input[type="number"] {
+      width: 80px;
+    }
+    .button-column input[type="checkbox"] {
+      margin-top: 10px;
+    }
+    .header {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .column-header {
+      text-align: left;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Left Column - Input Text Area -->
+  <div class="column">
+    <div class="column-header">Input</div>
+    <textarea id="inputText" placeholder="Enter text here..."></textarea>
+  </div>
+
+  <!-- Center Column - Button and Settings -->
+  <div class="button-column">
+    <button id="wrapTextButton">Text Wrap &gt;</button>
+    <label for="maxWidth">Max line width</label>
+    <input type="number" id="maxWidth" value="80" min="1" />
+    <input type="checkbox" id="wordWrap" />
+    <label for="wordWrap">Word Wrap</label>
+  </div>
+
+  <!-- Right Column - Wrapped Text Area -->
+  <div class="column">
+    <div class="column-header">Wrapped</div>
+    <textarea id="wrappedText" readonly placeholder="Wrapped text will appear here..."></textarea>
+  </div>
+</div>
+
+<script>
+  document.getElementById('wrapTextButton').addEventListener('click', function () {
+    const inputText = document.getElementById('inputText').value;
+    const maxWidth = parseInt(document.getElementById('maxWidth').value, 10);
+    const wordWrap = document.getElementById('wordWrap').checked;
+
+    const wrappedText = wrapText(inputText, maxWidth, wordWrap);
+    document.getElementById('wrappedText').value = wrappedText;
+  });
+
+  function wrapText(text, maxWidth, wordWrap) {
+    const lines = text.split('\n');
+    let wrappedText = '';
+
+    lines.forEach(line => {
+      if (wordWrap) {
+        // Word wrap mode
+        let words = line.split(' ');
+        let currentLine = '';
+
+        words.forEach(word => {
+          if ((currentLine + word).length <= maxWidth) {
+            currentLine += (currentLine ? ' ' : '') + word;
+          } else {
+            wrappedText += currentLine + '\n';
+            currentLine = word;
+          }
+        });
+
+        if (currentLine) {
+          wrappedText += currentLine + '\n';
+        }
+      } else {
+        // No word wrap mode (break at max width)
+        while (line.length > maxWidth) {
+          wrappedText += line.slice(0, maxWidth) + '\n';
+          line = line.slice(maxWidth);
+        }
+        wrappedText += line + '\n';
+      }
+    });
+
+    return wrappedText.trim();
+  }
+</script>
+
+</body>
+</html>
