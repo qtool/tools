@@ -123,40 +123,48 @@
   });
 
   function wrapText(text, maxWidth, wordWrap) {
-    const lines = text.split('\n');
+    const lines = text.split('\n'); // Split by lines
     let wrappedText = '';
 
-    lines.forEach(line => {
-      if (wordWrap) {
+    lines.forEach((line, index) => {
+      // Preserve leading spaces/tabs in the line
+      const leadingWhitespace = line.match(/^\s*/)[0]; // Match leading whitespace (tabs/spaces)
+      let content = line.trim(); // Remove leading whitespace for the wrapping process
+
+      if (line === '') {
+        // If it's an empty line, preserve it
+        wrappedText += '\n';
+      } else if (wordWrap) {
         // Word wrap mode
-        let words = line.split(' ');
+        let words = content.split(' '); // Split into words
         let currentLine = '';
 
         words.forEach(word => {
           if ((currentLine + word).length <= maxWidth) {
             currentLine += (currentLine ? ' ' : '') + word;
           } else {
-            wrappedText += currentLine + '\n';
+            wrappedText += leadingWhitespace + currentLine + '\n'; // Add leading spaces and wrapped line
             currentLine = word;
           }
         });
 
         if (currentLine) {
-          wrappedText += currentLine + '\n';
+          wrappedText += leadingWhitespace + currentLine + '\n'; // Add the last wrapped line
         }
       } else {
         // No word wrap mode (break at max width)
-        while (line.length > maxWidth) {
-          wrappedText += line.slice(0, maxWidth) + '\n';
-          line = line.slice(maxWidth);
+        while (content.length > maxWidth) {
+          wrappedText += leadingWhitespace + content.slice(0, maxWidth) + '\n'; // Add leading spaces
+          content = content.slice(maxWidth);
         }
-        wrappedText += line + '\n';
+        wrappedText += leadingWhitespace + content + '\n'; // Add the final remaining line
       }
     });
 
-    return wrappedText.trim();
+    return wrappedText.trim(); // Remove any trailing newline
   }
 </script>
+
 
 </body>
 </html>
