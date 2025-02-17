@@ -28,7 +28,6 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      overflow: auto; /* Enable scrolling */
       max-height: 100vh; /* Limit height to viewport */
     }
     .column textarea {
@@ -65,16 +64,24 @@
       font-weight: bold;
       margin-bottom: 10px;
     }
+    #linkListContainer {
+      overflow: auto;
+      max-height: calc(100vh - 60px); /* Adjust for header and padding */
+    }
     #linkList {
       list-style-type: none;
       padding: 0;
     }
     #linkList li {
       margin-bottom: 5px;
+      word-break: break-word; /* Word wrap */
     }
     #linkList a {
       text-decoration: none;
       color: blue;
+    }
+    .right-column {
+      width: 300px; /* Fixed width */
     }
   </style>
 </head>
@@ -93,9 +100,11 @@
   </div>
 
   <!-- Right Column - Link List -->
-  <div class="column">
-    <div class="column-header">Links</div>
-    <ul id="linkList"></ul>
+  <div class="column right-column">
+    <div class="column-header">Links Checklist</div>
+    <div id="linkListContainer">
+      <ul id="linkList"></ul>
+    </div>
   </div>
 </div>
 
