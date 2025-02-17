@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +15,6 @@
       align-items: center;
       background-color: #fff;
     }
-
     .container {
       display: flex;
       width: 100%;
@@ -24,15 +22,15 @@
       max-width: 100%;
       max-height: 100%;
     }
-
     .column {
       padding: 20px;
       background-color: #fff;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      overflow: auto; /* Enable scrolling */
+      max-height: 100vh; /* Limit height to viewport */
     }
-
     .column textarea {
       width: 100%;
       height: 100%;
@@ -44,7 +42,6 @@
       box-sizing: border-box;
       resize: none;
     }
-
     .button-column {
       width: 150px;
       display: flex;
@@ -52,7 +49,6 @@
       justify-content: center;
       background-color: #fff;
     }
-
     .button-column button {
       padding: 10px 20px;
       font-size: 16px;
@@ -64,99 +60,101 @@
       margin-bottom: 20px;
       width: 100%;
     }
-
     .column-header {
       text-align: left;
       font-weight: bold;
       margin-bottom: 10px;
     }
-
     #linkList {
       list-style-type: none;
       padding: 0;
     }
-
     #linkList li {
       margin-bottom: 5px;
     }
-
     #linkList a {
       text-decoration: none;
       color: blue;
     }
   </style>
 </head>
-
 <body>
 
-  <div class="container">
-    <!-- Left Column - Input Text Area -->
-    <div class="column">
-      <div class="column-header">Input Links</div>
-      <textarea id="inputText" placeholder="Enter links here, one per line..."></textarea>
-    </div>
-
-    <!-- Center Column - Button -->
-    <div class="button-column">
-      <button id="createListButton">Create List</button>
-    </div>
-
-    <!-- Right Column - Link List -->
-    <div class="column">
-      <div class="column-header">Links</div>
-      <ul id="linkList"></ul>
-    </div>
+<div class="container">
+  <!-- Left Column - Input Text Area -->
+  <div class="column">
+    <div class="column-header">Input Links</div>
+    <textarea id="inputText" placeholder="Enter links here, one per line..."></textarea>
   </div>
 
-  <script>
-    document.getElementById('createListButton').addEventListener('click', function () {
-      const inputText = document.getElementById('inputText').value;
-      const links = inputText.split('\n').filter(link => link.trim() !== '');
-      const linkList = document.getElementById('linkList');
+  <!-- Center Column - Button -->
+  <div class="button-column">
+    <button id="createListButton">Create List</button>
+  </div>
 
-      // Store the current checked state of existing links
-      const checkedStates = {};
-      linkList.querySelectorAll('li').forEach(li => {
-        const checkbox = li.querySelector('input[type="checkbox"]');
-        checkedStates[li.querySelector('a').href] = checkbox.checked;
-      });
+  <!-- Right Column - Link List -->
+  <div class="column">
+    <div class="column-header">Links</div>
+    <ul id="linkList"></ul>
+  </div>
+</div>
 
-      // Clear the existing list
-      linkList.innerHTML = '';
+<script>
+  document.getElementById('createListButton').addEventListener('click', function () {
+    const inputText = document.getElementById('inputText').value;
+    const links = inputText.split('\n').filter(link => link.trim() !== '');
+    const linkList = document.getElementById('linkList');
 
-      // Create new list items
-      links.forEach(link => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = link.trim();
-        a.textContent = link.trim();
-        a.target = '_blank'; // Open in new tab
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-
-        // Retain checked state if link existed previously
-        if (checkedStates[a.href]) {
-          checkbox.checked = checkedStates[a.href];
-        }
-
-        // Event listener to check/uncheck the checkbox when the link is clicked
-        a.addEventListener('click', function (event) {
-          event.preventDefault(); // Prevent navigation
-          checkbox.checked = !checkbox.checked;
-        });
-
-        checkbox.addEventListener('click', function (event) {
-          event.stopPropagation(); // Prevent the link's click event from firing
-        });
-
-        li.appendChild(checkbox);
-        li.appendChild(a);
-        linkList.appendChild(li);
-      });
+    // Store the current checked state of existing links
+    const checkedStates = {};
+    linkList.querySelectorAll('li').forEach(li => {
+      const checkbox = li.querySelector('input[type="checkbox"]');
+      checkedStates[li.querySelector('a').href] = checkbox.checked;
     });
-  </script>
+
+    // Clear the existing list
+    linkList.innerHTML = '';
+
+    // Create new list items
+    links.forEach(link => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = link.trim();
+      a.textContent = link.trim();
+      a.target = '_blank'; // Open in new tab
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+
+      // Retain checked state if link existed previously
+      if (checkedStates[a.href]) {
+        checkbox.checked = checkedStates[a.href];
+      }
+
+      // Event listener to check the box when the link is opened
+      a.addEventListener('click', function (event) {
+        if (event.button === 0) { // Left click
+          checkbox.checked = true;
+          window.open(a.href, '_blank'); // Open in new tab
+        }
+      });
+
+      a.addEventListener('mousedown', function (event) {
+        if (event.button === 1) { // Middle click
+          checkbox.checked = true;
+        }
+      });
+
+      checkbox.addEventListener('click', function (event) {
+        event.stopPropagation(); // Prevent the link's click event from firing
+      });
+
+      li.appendChild(checkbox);
+      li.appendChild(a);
+      linkList.appendChild(li);
+    });
+  });
+</script>
 
 </body>
-
 </html>
